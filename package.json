@@ -1,0 +1,38 @@
+{
+  "name": "@evanshortiss/dhst-api",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run format"
+    }
+  },
+  "scripts": {
+    "format": "standard --write 'api/**/*.js' '!api/libraries/node_modules'",
+    "undeploy:all": "now ls dockerhub-stat-tracker | awk '{print $2}' | xargs now rm -y",
+    "deploy:all": "now -e MONGODB_CONNECTION_STRING=@mongodb_connection_string",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evanshortiss/dockerhub-stat-tracker.git"
+  },
+  "author": "Evan Shortiss <evanshortiss@gmail.com> (http://evanshortiss.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/evanshortiss/dockerhub-stat-tracker/issues"
+  },
+  "homepage": "https://github.com/evanshortiss/dockerhub-stat-tracker#readme",
+  "devDependencies": {
+    "husky": "~1.2.0",
+    "jest": "~23.6.0",
+    "prettier": "~1.15.3",
+    "standard": "~12.0.1"
+  },
+  "dependencies": {
+    "boom": "~7.3.0",
+    "dayjs": "~1.7.8",
+    "env-var": "~3.4.1"
+  }
+}
