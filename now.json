@@ -5,40 +5,36 @@
     {
       "src": "api/libraries/public/*.js",
       "use": "@now/node"
-    },
-    {
-      "src": "api/libraries/public/*.json",
-      "use": "@now/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/libraries/manifest",
-      "dest": "api/libraries/public/manifest.json",
+      "src": "/api/images/details",
+      "dest": "api/images/public/images.js",
       "methods": ["GET"],
       "headers": {
         "content-type": "application/json"
       }
     },
     {
-      "src": "/api/libraries/names",
-      "dest": "api/libraries/public/libraries.js",
+      "src": "/api/images/summary",
+      "dest": "api/images/public/summary.js",
       "methods": ["GET"],
       "headers": {
         "content-type": "application/json"
       }
     },
     {
-      "src": "/api/libraries/summary",
-      "dest": "api/libraries/public/summary.js",
+      "src": "/api/images/downloads/alltime",
+      "dest": "api/images/public/downloads.alltime.js",
       "methods": ["GET"],
       "headers": {
         "content-type": "application/json"
       }
     },
     {
-      "src": "/api/libraries/downloads/monthly",
-      "dest": "api/libraries/public/downloads.monthly.js",
+      "src": "/api/images/downloads/monthly",
+      "dest": "api/images/public/downloads.monthly.js",
       "methods": ["GET"],
       "headers": {
         "content-type": "application/json"

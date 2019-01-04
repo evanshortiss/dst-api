@@ -7,7 +7,7 @@ const log = require('pino')({
   level: 'debug'
 })
 
-async function getEarliestRunId () {
+async function getEarliestRunIdForCurrentMonth () {
   const runsCol = await db.getRunsCollection()
   const earliestOfMonth = await runsCol
     .find({
@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
   log.info('fetching monthly downloads')
 
   const mostRecentRunOfMonth = await db.getLatestRunItem()
-  const earliestRunOfMonth = await getEarliestRunId()
+  const earliestRunOfMonth = await getEarliestRunIdForCurrentMonth()
 
   log.info(`recent run is ${mostRecentRunOfMonth.startTs} and earliest for month is ${earliestRunOfMonth.startTs}`)
 
@@ -48,12 +48,12 @@ module.exports = async (req, res) => {
         name: eItem.name,
         new: true
       }
-    }
-
-    return {
-      name: eItem.name,
-      new: false,
-      downloads: eItem.pullCount - matchingStartItem.pullCount
+    } else {
+      return {
+        name: eItem.name,
+        new: false,
+        downloads: eItem.pullCount - matchingStartItem.pullCount
+      }
     }
   })
 

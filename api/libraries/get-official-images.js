@@ -1,20 +1,27 @@
 const axios = require('axios')
-const path = require('path')
 
 module.exports = async () => {
-  const httpReq = await axios.get('https://github.com/docker-library/official-images/tree/master/library')
+  const httpReq = await axios.get(
+    'https://hub.docker.com/api/content/v1/products/search',
+    {
+      params: {
+        image_filter: 'official',
+        page_size: 250,
+        type: 'image'
+      },
+      headers: {
+        'Search-Version': 'v3'
+      }
+    }
+  )
 
-  const libraries = httpReq.data
-    // Get each line in the HTML
-    .split('\n')
-    // Extract hrefs matching this pattern, e.g 'library/ubuntu"'
-    .map(l => l.match(/\/master\/library\/.*"/gi))
-    // Filter out non-matching lines
-    .filter(l => l !== null && l[0])
-    // Strip ending quote from HTML
-    .map(l => l[0].replace('"', ''))
-    // Get end segemnt, e.g "ubuntu" from "library/ubuntu"
-    .map(l => path.basename(l))
-
-  return libraries
+  return httpReq.data.summaries.map(s => {
+    return {
+      name: s.name,
+      createdAt: s.created_at,
+      description: s.short_description,
+      logo: s.logo_url.large || s.logo_url.small || null,
+      categories: s.categories
+    }
+  })
 }

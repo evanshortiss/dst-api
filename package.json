@@ -5,11 +5,11 @@
   "main": "index.js",
   "husky": {
     "hooks": {
-      "pre-commit": "npm run format"
+      "pre-commit": "npm run format && git add ."
     }
   },
   "scripts": {
-    "format": "standard --write 'api/**/*.js' '!api/libraries/node_modules'",
+    "format": "standard --fix 'api/**/*.js' '!api/libraries/node_modules'",
     "undeploy:all": "now ls dockerhub-stat-tracker | awk '{print $2}' | xargs now rm -y",
     "deploy:all": "now -e MONGODB_CONNECTION_STRING=@mongodb_connection_string",
     "test": "echo \"Error: no test specified\" && exit 1"

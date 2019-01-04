@@ -10,6 +10,10 @@ const MONGO_URL = env
   .required()
   .asUrlString()
 
+/**
+ * Provides access to the underlying MongoDB instance
+ * @returns {Promise<mongodb.Db>}
+ */
 const _db = exports.getDb = mongodb.MongoClient.connect(MONGO_URL).then(client => {
   log.info('mongodb connection established')
   return Promise.resolve(client.db('docker-stats-tracker'))
@@ -26,6 +30,20 @@ const getCollection = exports.getCollection = async name => {
   return db.collection(name)
 }
 
+/**
+ * Simple getter that returns a reference to the "stats" collection
+ */
+exports.getStatsCollection = () => getCollection('stats')
+
+/**
+ * Simple getter that returns a reference to the "refresh-runs" collection
+ */
+exports.getRunsCollection = () => getCollection('refresh-runs')
+
+/**
+ * Fetches the latest image names using the latest complete run.
+ * @return {Promise<Array<String>>}
+ */
 exports.getLatestAvailableImageNames = async () => {
   log.info('fetching latest available image names')
 
@@ -38,15 +56,24 @@ exports.getLatestAvailableImageNames = async () => {
   return statsCol.distinct('name', { runId })
 }
 
-exports.getStatsCollection = () => getCollection('stats')
-exports.getRunsCollection = () => getCollection('refresh-runs')
+/**
+ * Returns all image names we've ever come across
+ * @returns {Promise<string[]>}
+ */
+exports.getAllDistinctImageNames = async () => {
+  const statsCol = await getCollection('stats')
 
+  return statsCol.distinct('name')
+}
+
+/**
+ * Returns all "stats" entries for a given runId
+ */
 exports.getStatsForRunId = async runId => {
   const statsCol = await getCollection('stats')
 
   return statsCol.find({ runId: new mongodb.ObjectID(runId) }).toArray()
 }
-
 
 const getLatestRunItem = exports.getLatestRunItem = async function () {
   const refreshCol = await getCollection('refresh-runs')
@@ -60,9 +87,27 @@ const getLatestRunItem = exports.getLatestRunItem = async function () {
     .sort({ $natural: -1 })
     .toArray()
 
-
   if (!lastRunItem || !lastRunItem[0]) {
     throw new Error('unable to get latest run item')
+  }
+
+  return lastRunItem[0]
+}
+
+exports.getFirstRunItem = async function () {
+  const refreshCol = await getCollection('refresh-runs')
+
+  const lastRunItem = await refreshCol.find({
+    endTs: {
+      $exists: true
+    }
+  })
+    .limit(1)
+    .sort({ $natural: 1 })
+    .toArray()
+
+  if (!lastRunItem || !lastRunItem[0]) {
+    throw new Error('unable to get first run item')
   }
 
   return lastRunItem[0]
