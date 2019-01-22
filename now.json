@@ -3,40 +3,56 @@
   "name": "dockerhub-stat-tracker",
   "builds": [
     {
-      "src": "api/libraries/public/*.js",
+      "src": "api/images/downloads.alltime.js",
+      "use": "@now/node"
+    },
+    {
+      "src": "api/images/downloads.monthly.js",
+      "use": "@now/node"
+    },
+    {
+      "src": "api/images/images.js",
+      "use": "@now/node"
+    },
+    {
+      "src": "api/images/summary.js",
       "use": "@now/node"
     }
   ],
   "routes": [
     {
       "src": "/api/images/details",
-      "dest": "api/images/public/images.js",
+      "dest": "api/images/images.js",
       "methods": ["GET"],
       "headers": {
+        "access-control-allow-origin": "*",
         "content-type": "application/json"
       }
     },
     {
       "src": "/api/images/summary",
-      "dest": "api/images/public/summary.js",
+      "dest": "api/images/summary.js",
       "methods": ["GET"],
       "headers": {
+        "access-control-allow-origin": "*",
         "content-type": "application/json"
       }
     },
     {
       "src": "/api/images/downloads/alltime",
-      "dest": "api/images/public/downloads.alltime.js",
+      "dest": "api/images/downloads.alltime.js",
       "methods": ["GET"],
       "headers": {
+        "access-control-allow-origin": "*",
         "content-type": "application/json"
       }
     },
     {
       "src": "/api/images/downloads/monthly",
-      "dest": "api/images/public/downloads.monthly.js",
+      "dest": "api/images/downloads.monthly.js",
       "methods": ["GET"],
       "headers": {
+        "access-control-allow-origin": "*",
         "content-type": "application/json"
       }
     }

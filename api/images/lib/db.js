@@ -1,3 +1,6 @@
+require('make-promises-safe')
+
+const moment = require('moment')
 const env = require('env-var')
 const log = require('pino')({
   name: __filename,
@@ -18,6 +21,10 @@ const _db = exports.getDb = mongodb.MongoClient.connect(MONGO_URL).then(client =
   log.info('mongodb connection established')
   return Promise.resolve(client.db('docker-stats-tracker'))
 })
+  .catch(e => {
+    console.log(e.stack)
+    process.exit(1)
+  })
 
 /**
  * Returns a reference to colllection
@@ -67,6 +74,16 @@ exports.getAllDistinctImageNames = async () => {
 }
 
 /**
+ * Get the latest officially supported image names
+ */
+exports.getLatestDistinctImageNames = async () => {
+  const latestRunItem = await getLatestRunItem()
+  const statsCol = await exports.getStatsCollection()
+
+  return statsCol.distinct('name', { runId: new mongodb.ObjectID(latestRunItem._id) })
+}
+
+/**
  * Returns all "stats" entries for a given runId
  */
 exports.getStatsForRunId = async runId => {
@@ -92,6 +109,26 @@ const getLatestRunItem = exports.getLatestRunItem = async function () {
   }
 
   return lastRunItem[0]
+}
+
+exports.getFirstRunItemOfCurrentMonth = async () => {
+  const refreshCol = await getCollection('refresh-runs')
+
+  const firstRunItem = await refreshCol.find({
+    endTs: {
+      $gte: moment.utc().startOf('month').toDate(),
+      $exists: true
+    }
+  })
+    .limit(1)
+    .sort({ $natural: 1 })
+    .toArray()
+
+  if (!firstRunItem || !firstRunItem[0]) {
+    throw new Error('unable to get first run item of the month')
+  }
+
+  return firstRunItem[0]
 }
 
 exports.getFirstRunItem = async function () {

@@ -1,6 +1,12 @@
 const axios = require('axios')
+const log = require('pino')({
+  name: __filename,
+  level: 'debug'
+})
 
 module.exports = async () => {
+  log.info('fetching official images list')
+
   const httpReq = await axios.get(
     'https://hub.docker.com/api/content/v1/products/search',
     {
