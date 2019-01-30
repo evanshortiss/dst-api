@@ -6,6 +6,7 @@ const log = require('pino')({
   name: __filename,
   level: 'info'
 })
+
 const mongodb = require('mongodb')
 
 const MONGO_URL = env

@@ -1,4 +1,4 @@
-require('make-promises-safe')
+// require('make-promises-safe')
 
 const db = require('./lib/db')
 const ObjectID = require('mongodb').ObjectID

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "dockerhub-stat-tracker",
+  "name": "dst",
   "builds": [
     {
       "src": "api/images/downloads.alltime.js",
